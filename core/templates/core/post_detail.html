@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between">
+    <div>
+      {% if post.anonymous %}匿名{% else %}{{ post.author.nickname|default:post.author.username }}{% endif %}
+    </div>
+    <div>
+      {% if user == post.author %}
+        <a href="{% url 'post_edit' post.id %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-pencil"></i> 编辑
+        </a>
+        <a href="{% url 'post_delete' post.id %}" class="btn btn-sm btn-outline-danger ms-1">
+          <i class="bi bi-trash"></i> 删除
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ post.title }}</h5>
+    <div class="card-text">{{ post.content|linebreaks }}</div>
+
+    {% if post.attachment %}
+      <div class="mt-3">
+        <strong>附件:</strong>
+        <a href="{{ post.attachment.url }}" target="_blank" class="ms-2">
+          <i class="bi bi-file-earmark"></i> {{ post.attachment.name|slice:"25:" }}
+        </a>
+      </div>
+    {% endif %}
+
+    <div class="mt-3 text-muted small">
+      <span>发表于 {{ post.created_at|date:"Y-m-d H:i" }}</span>
+      <span class="ms-2">•</span>
+      <span class="ms-2">可见范围: {{ post.get_visibility_display }}</span>
+    </div>
+  </div>
+</div>
+
+<h5 class="mt-4 mb-3">评论</h5>
+{% for comment in post.comments.all %}
+  <div class="card mb-2">
+    <div class="card-body p-2">
+      <div class="d-flex justify-content-between">
+        <div>
+          <strong>{% if comment.anonymous %}匿名{% else %}{{ comment.author.nickname|default:comment.author.username }}{% endif %}</strong>
+        </div>
+        <div class="small text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</div>
+      </div>
+      <p class="mb-0 mt-1">{{ comment.content }}</p>
+
+      {% if user == comment.author %}
+        <div class="mt-2 text-end">
+          <a href="{% url 'comment_edit' comment.id %}" class="btn btn-sm btn-outline-secondary">编辑</a>
+          <a href="{% url 'comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger ms-1">删除</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% empty %}
+  <div class="alert alert-light text-center">暂无评论</div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+  <h5 class="mt-4 mb-3">发表评论</h5>
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="mb-3">
+      <textarea name="content" id="content" class="form-control" rows="3" required placeholder="写下您的评论..."></textarea>
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" name="anonymous" id="id_anonymous" class="form-check-input">
+      <label for="id_anonymous" class="form-check-label">匿名评论</label>
+    </div>
+    <button type="submit" class="btn btn-primary">提交评论</button>
+  </form>
+{% else %}
+  <div class="alert alert-info">
+    <a href="{% url 'login' %}?next={% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary me-2">登录</a>
+    登录后方可发表评论
+  </div>
+{% endif %}
+{% endblock %}

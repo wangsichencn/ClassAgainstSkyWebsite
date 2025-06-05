@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block title %}成绩查看{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">成绩查看</h2>
+
+<h5 class="mb-3">你的成绩</h5>
+<table class="table">
+  <thead><tr><th>课程</th><th>成绩</th></tr></thead>
+  <tbody>
+  {% for grade in personal_grades %}
+    <tr><td>{{ grade.course.name }}</td><td>{{ grade.score }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h5 class="mt-5">班级成绩分布</h5>
+<ul>
+{% for stat in class_stats %}
+  <li>{{ stat.course.name }}：平均 {{ stat.avg }}, 最高 {{ stat.max }}, 最低 {{ stat.min }}</li>
+{% endfor %}
+</ul>
+
+<h5 class="mt-5">年级成绩分布</h5>
+<ul>
+{% for stat in grade_stats %}
+  <li>{{ stat.course.name }}：平均 {{ stat.avg }}, 最高 {{ stat.max }}, 最低 {{ stat.min }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

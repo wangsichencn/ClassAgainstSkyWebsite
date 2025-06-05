@@ -1,0 +1,224 @@
+{% extends 'core/base.html' %}
+
+{% block title %}公告管理{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">公告管理</h2>
+
+  <!-- 公告表单 -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">
+        {% if editing %}编辑公告{% else %}发布新公告{% endif %}
+      </h5>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="col-md-12">
+          <label for="id_title" class="form-label">标题</label>
+          <input type="text" name="title" id="id_title" class="form-control"
+                 value="{{ form.title.value|default_if_none:'' }}" maxlength="200" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_category" class="form-label">分类</label>
+          <select name="category" id="id_category" class="form-select">
+            {% for value, name in form.fields.category.choices %}
+              <option value="{{ value }}"
+                {% if form.category.value == value %}selected{% endif %}>
+                {{ name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_scope" class="form-label">可见范围</label>
+          <select name="scope" id="id_scope" class="form-select">
+            {% for value, name in form.fields.scope.choices %}
+              <option value="{{ value }}"
+                {% if form.scope.value == value %}selected{% endif %}>
+                {{ name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label for="id_content" class="form-label">内容</label>
+          <textarea name="content" id="id_content" class="form-control" rows="5" required>
+            {{ form.content.value|default_if_none:'' }}
+          </textarea>
+          <small class="form-text text-muted">支持Markdown格式</small>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-check form-switch mt-3">
+            <input class="form-check-input" type="checkbox" name="is_pinned" id="id_is_pinned"
+                   {% if form.is_pinned.value %}checked{% endif %}>
+            <label class="form-check-label" for="id_is_pinned">置顶此公告</label>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_attachment" class="form-label">附件</label>
+          <input type="file" name="attachment" id="id_attachment" class="form-control">
+          {% if announcement and announcement.attachment %}
+            <small class="d-block mt-2">
+              当前附件: <a href="{{ announcement.attachment.url }}" target="_blank">
+                {{ announcement.attachment.name|slice:"12:" }}
+              </a>
+            </small>
+          {% endif %}
+        </div>
+
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-primary me-2">
+            {% if editing %}更新公告{% else %}发布公告{% endif %}
+          </button>
+
+          {% if editing %}
+            <a href="{% url 'announcement_manage' %}" class="btn btn-outline-secondary me-2">
+              取消编辑
+            </a>
+          {% else %}
+            <button type="reset" class="btn btn-outline-secondary me-2">重置</button>
+          {% endif %}
+
+          {% if announcement and announcement.attachment %}
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#removeAttachmentModal">
+              移除附件
+            </button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 公告列表 -->
+  <h3 class="mb-3 border-bottom pb-2">我的公告列表</h3>
+
+  {% if announcements %}
+    <div class="list-group mb-5">
+      {% for ann in announcements %}
+        <div class="list-group-item {% if ann.is_pinned %}border-warning{% endif %}">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+              {% if ann.is_pinned %}
+                <i class="bi bi-pin-angle-fill text-warning"></i>
+              {% endif %}
+              {{ ann.title }}
+            </h5>
+            <small class="text-muted">{{ ann.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+
+          <p class="mb-1 mt-2">{{ ann.content|truncatechars:100 }}</p>
+
+          <div class="d-flex justify-content-between mt-2">
+            <div>
+              <small>
+                分类: <span class="badge bg-{% if ann.category == 'warning' %}danger{% else %}info{% endif %}">
+                  {{ ann.get_category_display }}
+                </span>
+                范围: <span class="badge bg-secondary">{{ ann.get_scope_display }}</span>
+                {% if ann.attachment %}
+                  <span class="badge bg-success ms-2">有附件</span>
+                {% endif %}
+              </small>
+            </div>
+
+            <div>
+              <a href="{% url 'announcement_manage' %}?edit={{ ann.id }}"
+                 class="btn btn-sm btn-outline-primary">编辑</a>
+              <a href="{% url 'announcement_delete' ann.id %}"
+                 class="btn btn-sm btn-outline-danger">删除</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      您还没有发布任何公告。
+    </div>
+  {% endif %}
+
+  <!-- 分页 -->
+  {% if is_paginated %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {% if announcements.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="首页">
+              <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ announcements.previous_page_number }}" aria-label="上一页">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link">
+            第 {{ announcements.number }} 页 / 共 {{ announcements.paginator.num_pages }} 页
+          </span>
+        </li>
+
+        {% if announcements.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ announcements.next_page_number }}" aria-label="下一页">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ announcements.paginator.num_pages }}" aria-label="尾页">
+              <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
+  <!-- 移除附件模态框 -->
+  {% if announcement and announcement.attachment %}
+    <div class="modal fade" id="removeAttachmentModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">移除附件</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>确定要移除当前附件吗？此操作不可撤销。</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <form method="post" action="{% url 'remove_announcement_attachment' announcement.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">移除附件</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

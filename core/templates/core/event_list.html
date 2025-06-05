@@ -1,0 +1,138 @@
+{% extends 'core/base.html' %}
+{% block title %}活动与邀请{% endblock %}
+
+{% block content %}
+<!-- 新增的顶部导航模块 -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-body d-flex justify-content-between align-items-center">
+    <h3 class="card-title mb-0">活动与邀请</h3>
+    <div class="d-flex gap-2">
+      <a href="{% url 'event_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> 创建活动
+      </a>
+      <a href="{% url 'calendar_view' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-calendar"></i> 日历视图
+      </a>
+      <a href="{% url 'past_events' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-clock-history"></i> 历史活动
+      </a>
+    </div>
+  </div>
+</div>
+
+<h2 class="mb-3">正式活动</h2>
+
+<!-- 在活动之间添加快速导航选项 -->
+<div class="alert alert-info">
+  <div class="d-flex justify-content-between align-items-center">
+    <span>快速导航:</span>
+    <div class="d-flex gap-2">
+      <a href="#official-events" class="btn btn-sm btn-info">正式活动</a>
+      <a href="#casual-events" class="btn btn-sm btn-info">随性邀请</a>
+      <a href="#my-events" class="btn btn-sm btn-info">我参与的</a>
+      <a href="#new-events" class="btn btn-sm btn-info">最新活动</a>
+    </div>
+  </div>
+</div>
+
+{% for event in events %}
+  {% if event.event_type != 'casual' %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a href="{% url 'event_detail' event.id %}">{{ event.title }}</a>
+        {% if request.user in event.participants.all %}
+        <span class="badge bg-success ms-2">已报名</span>
+        {% endif %}
+      </h5>
+      <p class="card-text">{{ event.description|truncatewords:30 }}</p>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <p class="text-muted small mb-0">
+          时间：{{ event.start_time|date:"Y-m-d H:i" }} ~ {{ event.end_time|date:"Y-m-d H:i" }}
+        </p>
+        <div>
+          <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-primary">
+            查看详情
+          </a>
+          {% if request.user == event.creator %}
+          <a href="{% url 'event_edit' event.id %}" class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-pencil"></i> 编辑
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% empty %}
+  <div class="alert alert-info">
+    <p class="text-center">暂无活动 <a href="{% url 'event_create' %}">创建新活动？</a></p>
+  </div>
+{% endfor %}
+
+<h2 class="mb-3 mt-5" id="casual-events">随性邀请</h2>
+
+{% for event in events %}
+  {% if event.event_type == 'casual' %}
+  <div class="card mb-3 border-secondary">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a href="{% url 'event_detail' event.id %}">{{ event.title }}</a>
+        <span class="badge bg-secondary ms-2">随性</span>
+      </h5>
+      <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <p class="text-muted small mb-0">
+          {{ event.start_time|date:"Y-m-d H:i" }} · 发起人：{{ event.creator.nickname|default:event.creator.username }}
+        </p>
+        <div>
+          <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-secondary">
+            加入邀请
+          </a>
+          <a href="{% url 'profile' event.creator.id %}" class="btn btn-sm btn-outline-info">
+            <i class="bi bi-person"></i> 查看发起人
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endfor %}
+
+<!-- 新增底部相关链接 -->
+<div class="card mt-5">
+  <div class="card-body">
+    <h5 class="card-title mb-3">更多活动相关</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6><i class="bi bi-calendar-check"></i> 活动日历</h6>
+            <p>查看完整的活动日历</p>
+            <a href="{% url 'calendar_view' %}" class="stretched-link"></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6><i class="bi bi-people"></i> 我参与的活动</h6>
+            <p>查看您已报名的活动</p>
+            <a href="{% url 'user_events' %}" class="stretched-link"></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6><i class="bi bi-trophy"></i> 热门活动</h6>
+            <p>最受欢迎的活动推荐</p>
+            <a href="{% url 'popular_events' %}" class="stretched-link"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

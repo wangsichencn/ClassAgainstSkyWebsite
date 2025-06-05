@@ -1,0 +1,234 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}邮箱登录 - 班级网站{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block content %}
+<div class="login-container">
+  <div class="login-header">
+    <h2>欢迎回来</h2>
+    <p class="text-muted">使用您的注册邮箱登录账户</p>
+    <!-- 邮箱图标 -->
+    <div class="text-center mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+      </svg>
+    </div>
+  </div>
+
+  {# 在这里添加消息显示区域 #}
+  {% if messages %}
+    <div class="alert alert-danger mb-4">
+      {% for message in messages %}
+        <p class="mb-0">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="login-form">
+    {% csrf_token %}
+
+    {# 邮箱字段 #}
+    <div class="form-group">
+      <label for="id_email" class="form-label">邮箱地址</label>
+      <input type="email" name="email" id="id_email" class="form-control"
+             placeholder="请输入您的注册邮箱" required autofocus
+             value="{{ request.POST.email }}">
+    </div>
+
+    {# 密码字段 #}
+    <div class="form-group">
+      <label for="id_password" class="form-label">密码</label>
+      <div class="input-group">
+        <input type="password" name="password" id="id_password"
+               class="form-control" placeholder="请输入密码" required
+               value="{{ request.POST.password }}">
+        <span class="input-group-text" id="password-toggle" style="cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+          </svg>
+        </span>
+      </div>
+      <div class="text-end mt-2">
+        <a href="{% url 'forgot_password' %}" class="forgot-password-link">忘记密码？</a>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-login btn-primary w-100 mt-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right me-2" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+        <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+      </svg>
+      登录账户
+    </button>
+  </form>
+
+  <div class="login-footer text-center">
+    <p>还没有账号？ <a href="{% url 'register' %}" class="register-link">立即注册</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f5f7fb;
+    background-image: linear-gradient(120deg, #e0f7fa 0%, #f3e5f5 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    margin: 2rem auto;
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .login-header h2 {
+    font-weight: 700;
+    color: #3f51b5;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-header .text-muted {
+    color: #757575;
+    font-size: 1rem;
+  }
+
+  .alert {
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+
+  .alert-danger {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
+    color: #b71c1c;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #424242;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .form-control:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+  }
+
+  .form-control::placeholder {
+    color: #bdbdbd;
+  }
+
+  .forgot-password-link {
+    color: #3f51b5;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .forgot-password-link:hover {
+    color: #303f9f;
+    text-decoration: underline;
+  }
+
+  .btn-login {
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background-color: #3f51b5;
+    border: none;
+  }
+
+  .btn-login:hover {
+    background-color: #303f9f;
+  }
+
+  .login-footer {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: #757575;
+  }
+
+  .register-link {
+    color: #3f51b5;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .register-link:hover {
+    text-decoration: underline;
+  }
+
+  footer {
+    background-color: transparent !important;
+    position: relative;
+    z-index: 2;
+  }
+
+  .input-group-text {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 密码可见性切换功能
+  document.getElementById('password-toggle').addEventListener('click', function() {
+    const passwordInput = document.getElementById('id_password');
+    const icon = this.querySelector('svg');
+
+    // 检查当前SVG元素是否是眼睛
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      // 创建闭眼图标SVG
+      icon.innerHTML = '<path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.777.777A7.028 7.028 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z"/><path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z"/>';
+    } else {
+      passwordInput.type = 'password';
+      // 恢复为眼睛图标
+      icon.innerHTML = '<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>';
+    }
+  });
+</script>
+{% endblock %}

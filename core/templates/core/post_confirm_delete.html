@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}删除帖子确认{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header bg-danger text-white">
+    <h5 class="mb-0">删除帖子确认</h5>
+  </div>
+  <div class="card-body">
+    <h5>确定要删除帖子 "{{ post.title }}" 吗？</h5>
+    <p class="text-danger">此操作不可撤销，所有相关内容（包括评论和附件）将被永久删除！</p>
+
+    {% if post.comments.exists %}
+    <div class="alert alert-warning">
+      <h6>这将同时删除所有相关评论：</h6>
+      <ul>
+        {% for comment in post.comments.all|slice:":5" %}
+          <li>{{ comment.content|truncatechars:50 }} ({{ comment.author.nickname|default:comment.author.username }})</li>
+        {% endfor %}
+        {% if post.comments.count > 5 %}
+          <li>... 以及另外 {{ post.comments.count|add:-5 }} 条评论</li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="mt-4 d-flex justify-content-end">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger me-2">确认删除</button>
+        <a href="{% url 'post_detail' post.id %}" class="btn btn-secondary">取消</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

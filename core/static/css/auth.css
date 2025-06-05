@@ -1,0 +1,88 @@
+/* static/css/auth.css */
+
+.login-container {
+  margin: 2rem auto;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+  border-top: 4px solid #4e73df;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h2 {
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.login-header p {
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+.login-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* 确保输入框宽度一致 */
+.login-form .form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.login-form .form-control:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.16);
+}
+
+.login-form .btn-login {
+  padding: 0.8rem;
+  background-color: #4e73df;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s;
+}
+
+.login-form .btn-login:hover {
+  background-color: #2d59bb;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  color: #718096;
+}
+
+.login-footer a {
+  color: #4e73df;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.login-footer a:hover {
+  color: #2d59bb;
+  text-decoration: underline;
+}
+
+/* 错误消息对齐 */
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}

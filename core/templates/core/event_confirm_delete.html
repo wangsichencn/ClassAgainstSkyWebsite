@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% block title %}删除活动{% endblock %}
+
+{% block content %}
+<div class="card border-danger">
+  <div class="card-header bg-danger text-white">
+    <h3>确认删除活动</h3>
+  </div>
+  <div class="card-body">
+    <p>您确定要删除以下活动吗？此操作无法撤销。</p>
+
+    <div class="alert alert-warning">
+      <strong>{{ event.title }}</strong><br>
+      <small>时间: {{ event.start_time|date:"Y-m-d H:i" }}</small>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">确认删除</button>
+      <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary">取消</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

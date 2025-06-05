@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% block title %}编辑评论{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">编辑评论</h5>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-3">原帖: {{ comment.post.title|truncatechars:50 }}</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="{{ form.content.id_for_label }}" class="form-label">评论内容</label>
+        {{ form.content }}
+        {% if form.content.errors %}
+          <div class="text-danger">{{ form.content.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3 form-check">
+        {{ form.anonymous }}
+        <label class="form-check-label" for="{{ form.anonymous.id_for_label }}">匿名评论</label>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">保存更改</button>
+        <a href="{% url 'post_detail' comment.post.id %}" class="btn btn-secondary">取消</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

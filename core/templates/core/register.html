@@ -1,0 +1,248 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}注册新账户 - 班级网站{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block content %}
+<div class="register-container">
+  <div class="register-header text-center">
+    <h2 class="mb-3">创建新账户</h2>
+    <p class="text-muted">请填写以下信息完成注册</p>
+
+    <div class="mb-4">
+      <div class="avatar-circle mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+          <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 极 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 错误消息容器 -->
+  {% if messages %}
+    <div class="alert alert-danger mb-4">
+      {% for message in messages %}
+        <p class="mb-0">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- 表单状态指示器 -->
+  {% if not form.errors %}
+    <div id="formStatus" class="d-none alert alert-info text-center">
+      正在处理注册信息...
+    </div>
+  {% endif %}
+
+  <form method="post" class="register-form" action="{% url 'register' %}">
+    {% csrf_token %}
+
+    <!-- 邮箱字段 -->
+    <div class="form-group mb-4">
+      <label for="id_email" class="form-label">{{ form.email.label }}</label>
+      <input type="email" name="email" id="id_email"
+             class="form-control {% if form.errors.email %}is-invalid{% endif %}"
+             placeholder="{{ form.email.help_text }}"
+             value="{{ form.email.value|default:'' }}"
+             required>
+      {% if form.errors.email %}
+        <div class="invalid-feedback">
+          {% for error in form.errors.email %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <small class="form-text text-muted">{{ form.email.help_text }}</small>
+    </div>
+
+    <!-- 用户名字段 -->
+    <div class="form-group mb-4">
+      <label for="id_username" class="form-label">{{ form.username.label }}</label>
+      <input type="text" name="username" id="id_username"
+             class="form-control {% if form.errors.username %}is-invalid{% endif %}"
+             placeholder="创建您的用户名"
+             value="{{ form.username.value|default:'' }}"
+             required>
+      {% if form.errors.username %}
+        <div class="invalid-feedback">
+          {% for error in form.errors.username %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 学号字段 -->
+    <div class="form-group mb-4">
+      <label for="id_student_id" class="form-label">{{ form.student_id.label }}</label>
+      <input type="text" name="student_id" id="id_student_id"
+             class="form-control {% if form.errors.student_id %}is-invalid{% endif %}"
+             placeholder="{{ form.student_id.help_text }}"
+             value="{{ form.student_id.value|default:'' }}"
+             required>
+      {% if form.errors.student_id %}
+        <div class="invalid-feedback">
+          {% for error in form.errors.student_id %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <small class="form-text text-muted">{{ form.student_id.help_text }}</small>
+    </div>
+
+    <!-- 真实姓名字段 -->
+    <div class="form-group mb-4">
+      <label for="id_full_name" class="form-label">{{ form.full_name.label }}</label>
+      <input type="text" name="full_name" id="id_full_name"
+             class="form-control {% if form.errors.full_name %}is-invalid{% endif %}"
+             placeholder="{{ form.full_name.help_text }}"
+             value="{{ form.full_name.value|default:'' }}"
+             required>
+      {% if form.errors.full_name %}
+        <div class="invalid-feedback">
+          {% for error in form.errors.full_name %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <small class="form-text text-muted">{{ form.full_name.help_text }}</small>
+    </div>
+
+    {# 密码字段 #}
+    <div class="form-group mb-4">
+      <label for="id_password1" class="form-label">设置密码</label>
+      <div class="input-group">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+          </svg>
+        </span>
+        <input type="password" name="password1" id="id_password1"
+               class="form-control {% if form.errors.password1 %}is-invalid{% endif %}"
+               placeholder="至少8个字符"
+               required>
+        <span class="input-group-text toggle-password" data-target="id_password1" style="cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+          </svg>
+        </span>
+        {% if form.errors.password1 %}
+          <div class="invalid-feedback">
+            {% for error in form.errors.password1 %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="form-text small">使用字母、数字和符号的组合增强安全性</div>
+    </div>
+
+    {# 密码确认字段 #}
+    <div class="form-group mb-4">
+      <label for="id_password2" class="form-label">确认密码</label>
+      <div class="input-group">
+        <span class="input-group-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
+            <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+            <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/>
+          </svg>
+        </span>
+        <input type="password" name="password2" id="id_password2"
+               class="form-control {% if form.errors.password2 %}is-invalid{% endif %}"
+               placeholder="请再次输入密码"
+               required>
+        <span class="input-group-text toggle-password" data-target="id_password2" style="cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+          </svg>
+        </span>
+        {% if form.errors.password2 %}
+          <div class="invalid-feedback">
+            {% for error in form.errors.password2 %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-check mb-4">
+      <input class="form-check-input" type="checkbox" id="terms" required>
+      <label class="form-check-label" for="terms">
+        我已阅读并同意 <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">使用条款</a> 和 <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">隐私政策</a>
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-register btn-primary w-100 py-3 fs-5">
+      注册新账户
+    </button>
+
+    <p class="mt-4 text-center">
+      已有账号？<a href="{% url 'login' %}" class="login-link">登录</a>
+    </p>
+  </form>
+</div>
+
+<!-- 条款模态框和隐私政策模态框保持不变 -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* 样式保持不变 */
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 密码可见性切换
+    document.querySelectorAll('.toggle-password').forEach(function(element) {
+      element.addEventListener('click', function() {
+        try {
+          const target = this.getAttribute('data-target');
+          const passwordInput = document.getElementById(target);
+          const icon = this.querySelector('svg');
+
+          if (passwordInput) {
+            if (passwordInput.type === 'password') {
+              passwordInput.type = 'text';
+              icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+              passwordInput.type = 'password';
+              icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+          }
+        } catch (error) {
+          console.error('密码切换出错:', error);
+        }
+      });
+    });
+
+    // 表单提交处理
+    const form = document.querySelector('.register-form');
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        try {
+          const termsCheckbox = document.getElementById('terms');
+          if (termsCheckbox && !termsCheckbox.checked) {
+            alert('请先阅读并同意使用条款和隐私政策');
+            event.preventDefault();
+            return;
+          }
+
+          // 显示提交状态
+          const formStatus = document.getElementById('formStatus');
+          if (formStatus) {
+            formStatus.classList.remove('d-none');
+          }
+        } catch (error) {
+          console.error('表单提交处理出错:', error);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

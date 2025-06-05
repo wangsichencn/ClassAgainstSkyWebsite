@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block title %}搜索{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">搜索</h2>
+<form method="get" class="mb-4">
+  <input type="text" name="q" class="form-control" placeholder="输入关键字..." value="{{ request.GET.q }}">
+</form>
+
+{% if results %}
+  <h5>搜索结果：</h5>
+  <ul>
+    {% for item in results %}
+      <li><a href="{{ item.get_absolute_url }}">{{ item }}</a></li>
+    {% endfor %}
+  </ul>
+{% elif request.GET.q %}
+  <p class="text-muted">没有找到结果</p>
+{% endif %}
+{% endblock %}

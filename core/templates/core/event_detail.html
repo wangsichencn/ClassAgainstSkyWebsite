@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ event.title }} - 活动详情{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="card-title">{{ event.title }}</h2>
+        <p class="text-muted">
+            类型: {{ event.get_event_type_display }} |
+            发起人: {{ event.creator.nickname|default:event.creator.username }}
+        </p>
+
+        <div class="mb-3">
+            <h5>活动详情</h5>
+            <p>{{ event.description|linebreaks }}</p>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>时间:</strong> {{ event.start_time|date:"Y-m-d H:i" }} 至 {{ event.end_time|date:"Y-m-d H:i" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>地点:</strong> {{ event.location|default:"待定" }}</p>
+            </div>
+        </div>
+
+        {% if not signed_up %}
+            <a href="{% url 'event_signup' event.id %}" class="btn btn-primary">报名参加</a>
+        {% else %}
+            <button class="btn btn-success" disabled>已报名</button>
+        {% endif %}
+
+        {% if can_edit %}
+            <a href="{% url 'event_edit' event.id %}" class="btn btn-warning mx-2">编辑活动</a>
+            <a href="{% url 'event_delete' event.id %}" class="btn btn-danger">删除活动</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">已报名成员</h5>
+        {% if participants %}
+            <ul>
+            {% for reg in participants %}
+                <li>{{ reg.user.nickname|default:reg.user.username }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">暂无成员报名</p>
+        {% endif %}
+        <p class="small text-muted mt-2">共 {{ event.registrations.count }} 人报名</p>
+    </div>
+</div>
+{% endblock %}

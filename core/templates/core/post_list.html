@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+{% block title %}帖子列表{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">帖子列表</h2>
+  <a href="{% url 'post_create' %}" class="btn btn-primary">
+    <i class="bi bi-plus"></i> 发布新帖
+  </a>
+</div>
+
+<div class="mb-3">
+  <form method="get" class="row g-2">
+    <div class="col-md-6">
+      <input type="text" name="q" class="form-control" placeholder="搜索帖子..." value="{{ request.GET.q }}">
+    </div>
+    <div class="col-md-3">
+      <select name="visibility" class="form-select">
+        <option value="">所有范围</option>
+        <option value="all" {% if request.GET.visibility == 'all' %}selected{% endif %}>全校</option>
+        <option value="class" {% if request.GET.visibility == 'class' %}selected{% endif %}>班级</option>
+        <option value="grade" {% if request.GET.visibility == 'grade' %}selected{% endif %}>年级</option>
+        <option value="major" {% if request.GET.visibility == 'major' %}selected{% endif %}>专业</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-outline-primary w-100">筛选</button>
+    </div>
+  </form>
+</div>
+
+{% for post in posts %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">{{ post.title }}</a>
+        {% if post.attachment %}
+          <span class="ms-2 small">
+            <i class="bi bi-paperclip"></i>
+          </span>
+        {% endif %}
+      </h5>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">
+            {% if post.anonymous %}匿名{% else %}{{ post.author.nickname|default:post.author.username }}{% endif %}
+          </span>
+          <span class="text-muted ms-2">•</span>
+          <span class="text-muted ms-2">发布于 {{ post.created_at|date:"Y-m-d H:i" }}</span>
+          <span class="text-muted ms-2">•</span>
+          <span class="badge bg-secondary ms-2">{{ post.get_visibility_display }}</span>
+        </div>
+        <div class="small text-muted">
+          <i class="bi bi-chat"></i> {{ post.comments.count }} 条评论
+        </div>
+      </div>
+
+      <p class="card-text mt-2 text-truncate">{{ post.content|striptags|truncatechars:150 }}</p>
+
+      <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary">
+        查看详情 <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+{% empty %}
+  <div class="alert alert-light text-center py-5">
+    <h4 class="text-muted">还没有帖子</h4>
+    <p class="mb-4">发布第一个帖子来开始讨论吧！</p>
+    <a href="{% url 'post_create' %}" class="btn btn-primary">发布新帖</a>
+  </div>
+{% endfor %}
+
+<!-- 分页导航 -->
+{% if posts.has_other_pages %}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    {% if posts.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="首页">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.previous_page_number }}">上一页</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">上一页</a>
+      </li>
+    {% endif %}
+
+    {% for i in posts.paginator.page_range %}
+      {% if posts.number == i %}
+        <li class="page-item active" aria-current="page">
+          <a class="page-link" href="#">{{ i }}</a>
+        </li>
+      {% elif i > posts.number|add:-3 and i < posts.number|add:3 %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if posts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.next_page_number }}">下一页</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.paginator.num_pages }}" aria-label="尾页">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">下一页</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

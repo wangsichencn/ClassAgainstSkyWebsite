@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% block title %}热门活动{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">热门活动</h2>
+
+{% for event in events %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">{{ event.title }}
+      <span class="badge bg-success">{{ event.participants_count }}人报名</span>
+    </h5>
+    <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+    <div class="d-flex justify-content-between">
+      <span class="text-muted small">时间：{{ event.start_time|date:"Y-m-d H:i" }}</span>
+      <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-primary">查看详情</a>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="alert alert-info">
+  暂无热门活动
+</div>
+{% endfor %}
+{% endblock %}

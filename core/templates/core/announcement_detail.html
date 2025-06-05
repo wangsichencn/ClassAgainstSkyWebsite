@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ announcement.title }} - 公告详情{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card border-{% if announcement.category == 'warning' %}danger{% else %}primary{% endif %} shadow">
+    <div class="card-header bg-{% if announcement.category == 'warning' %}danger text-white{% else %}light{% endif %}">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+          {% if announcement.is_pinned %}
+            <i class="bi bi-pin-angle-fill text-warning me-2"></i>
+          {% endif %}
+          {{ announcement.title }}
+        </h2>
+
+        {% if announcement.author == request.user %}
+          <a href="{% url 'announcement_manage' %}?edit={{ announcement.id }}"
+             class="btn btn-sm btn-outline-{% if announcement.category == 'warning' %}light{% else %}primary{% endif %}">
+            <i class="bi bi-pencil"></i> 编辑
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="mt-2">
+        <span class="badge bg-{% if announcement.category == 'warning' %}light text-danger{% else %}info{% endif %} me-2">
+          {{ announcement.get_category_display }}
+        </span>
+        <span class="badge bg-secondary me-2">{{ announcement.get_scope_display }}</span>
+        <span class="text-muted">{{ announcement.created_at|date:"Y-m-d H:i" }}</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="announcement-content mb-4">
+        {{ announcement.content|linebreaks }}
+      </div>
+
+      <!-- 附件区域 -->
+      {% if announcement.attachment %}
+        <div class="card mb-4">
+          <div class="card-header py-2 bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-paperclip me-2"></i> 附件
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-file-earmark me-2"></i>
+                <span>{{ announcement.attachment.name|slice:"12:" }}</span>
+              </div>
+
+              <a href="{{ announcement.attachment.url }}"
+                 class="btn btn-sm btn-success" download>
+                <i class="bi bi-download me-1"></i> 下载
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card-footer bg-light py-2">
+      <div class="d-flex justify-content-between">
+        <small class="text-muted">
+          发布者: {{ announcement.author.nickname }}
+        </small>
+
+        <a href="{% url 'announcement_list' %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> 返回列表
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

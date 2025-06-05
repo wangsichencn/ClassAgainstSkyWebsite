@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% block title %}首页{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="mb-3">最新通知</h2>
+  <div class="row">
+    {% for notice in announcements %}
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ notice.title }}</h5>
+          <p class="card-text">
+            <span class="badge bg-info">{{ notice.get_category_display }}</span>
+            <small class="text-muted">{{ notice.created_at|date:"Y-m-d H:i" }}</small>
+          </p>
+          <a href="#" class="stretched-link">查看详情</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info">暂无通知</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="mb-3">最新活动</h2>
+  <div class="row">
+    {% for event in events %}
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ event.title }}</h5>
+          <p class="card-text">
+            <small class="text-muted">{{ event.start_time|date:"Y-m-d H:i" }}</small>
+          </p>
+          <a href="#" class="stretched-link">查看详情</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info">暂无活动</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="mb-3">最新帖子</h2>
+  <div class="row">
+    {% for post in posts %}
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">
+            {% if post.anonymous %}<em>匿名</em>{% else %}{{ post.author.username }}{% endif %}
+          </p>
+          <a href="{% url 'post_detail' post.id %}" class="stretched-link">查看详情</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info">暂无帖子</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+<!-- core/post_form.html -->
+{% extends 'core/base.html' %}
+{% block title %}{% if is_edit %}编辑帖子{% else %}发布帖子{% endif %}{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">{% if is_edit %}编辑帖子{% else %}发布新帖子{% endif %}</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <div class="mb-3">
+    <label for="{{ form.title.id_for_label }}" class="form-label">标题</label>
+    {{ form.title }}
+    {% if form.title.errors %}
+      <div class="text-danger">{{ form.title.errors }}</div>
+    {% endif %}
+  </div>
+  
+  <div class="mb-3">
+    <label for="{{ form.content.id_for_label }}" class="form-label">内容</label>
+    {{ form.content }}
+    {% if form.content.errors %}
+      <div class="text-danger">{{ form.content.errors }}</div>
+    {% endif %}
+  </div>
+  
+  <div class="mb-3 form-check">
+    {{ form.anonymous }}
+    <label class="form-check-label" for="{{ form.anonymous.id_for_label }}">匿名发表</label>
+  </div>
+  
+  <div class="mb-3">
+    <label for="{{ form.visibility.id_for_label }}" class="form-label">可见范围</label>
+    {{ form.visibility }}
+    <div class="form-text">设置哪些用户可以查看此帖</div>
+    {% if form.visibility.errors %}
+      <div class="text-danger">{{ form.visibility.errors }}</div>
+    {% endif %}
+  </div>
+  
+  <div class="mb-3">
+    <label for="{{ form.attachment.id_for_label }}" class="form-label">附件</label>
+    {{ form.attachment }}
+    {% if form.attachment.errors %}
+      <div class="text-danger">{{ form.attachment.errors }}</div>
+    {% endif %}
+    
+    {% if post and post.attachment %}
+      <div class="mt-2">
+        <small>当前附件: 
+          <a href="{{ post.attachment.url }}" target="_blank">{{ post.attachment.name|slice:"25:" }}</a>
+          <a href="#" class="ms-2 text-danger delete-attachment" data-post-id="{{ post.id }}">删除附件</a>
+        </small>
+      </div>
+    {% endif %}
+  </div>
+  
+  <button type="submit" class="btn btn-primary">
+    {% if is_edit %}保存更改{% else %}发布{% endif %}
+  </button>
+  <a href="{% if post %}{% url 'post_detail' post.id %}{% else %}{% url 'post_list' %}{% endif %}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const deleteLinks = document.querySelectorAll('.delete-attachment');
+  
+  deleteLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('确定要删除附件吗？')) {
+        fetch('{% url "post_remove_attachment" post_id=0 %}'.replace('0', this.dataset.postId), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.parentElement.style.display = 'none';
+            // 更新文件选择控件
+            document.querySelector('#id_attachment').value = '';
+          }
+        });
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
