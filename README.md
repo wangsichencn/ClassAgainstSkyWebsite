@@ -1,6 +1,9 @@
 # 班级逆天网站
 ## 使用说明
 ### 配置
+虚拟环境
+使用 `./venv/Scripts/python.exe` 作为解释器
+
 创建 MySQL 数据库
 ```mysql
 CREATE DATABASE classSite;
